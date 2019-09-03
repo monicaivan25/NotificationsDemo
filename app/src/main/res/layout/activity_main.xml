@@ -37,4 +37,15 @@
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="5dp"
         android:layout_below="@id/long_text_notification_button"/>
+
+    <Button
+        android:id="@+id/progress_notification_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Progress Bar Notification"
+        android:textSize="15sp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/intent_notification_button"/>
 </RelativeLayout>

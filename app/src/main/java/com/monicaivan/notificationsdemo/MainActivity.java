@@ -7,15 +7,21 @@ import androidx.core.app.NotificationManagerCompat;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.RemoteInput;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity {
 
-    final private String CHANNEL_ID = "channel_id";
+    private static final String CHANNEL_ID = "channel_id";
+    private static final String KEY_TEXT_REPLY = "key_text_reply";
+    private static final int CONVERSATION_REQUEST_CODE = 123;
     private NotificationManagerCompat notificationManager;
 
 
@@ -23,14 +29,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
         createNotificationChannel();
         notificationManager = NotificationManagerCompat.from(this);
 
         findViewById(R.id.basic_notification_button).setOnClickListener(view -> createBasicNotification());
         findViewById(R.id.long_text_notification_button).setOnClickListener(view -> createBasicNotificationLongText());
         findViewById(R.id.intent_notification_button).setOnClickListener(view -> createIntentNotification());
+        findViewById(R.id.progress_notification_button).setOnClickListener(view -> createProgressBarNotification());
     }
 
+    ///Basic notifications
     private void createBasicNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
@@ -59,8 +68,40 @@ public class MainActivity extends AppCompatActivity {
                 .setContentTitle("Cat")
                 .setContentText("Meow.")
                 .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
         notificationManager.notify(3, builder.build());
+    }
+
+    //Progress bar notification
+    private void createProgressBarNotification() {
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+        builder.setContentTitle("Progress bar notification")
+                .setContentText("Loading")
+                .setSmallIcon(R.drawable.ic_notifications)
+                .setPriority(NotificationCompat.PRIORITY_LOW);
+
+        final int PROGRESS_MAX = 100;
+        final int[] currentProgress = {0};
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (currentProgress[0] == PROGRESS_MAX) {
+                    builder.setContentText("Done")
+                            .setProgress(0, 0, false);
+                    notificationManager.notify(3, builder.build());
+                    timer.cancel();
+                } else {
+                    currentProgress[0] += 10;
+                    builder.setProgress(PROGRESS_MAX, currentProgress[0], false);
+                    notificationManager.notify(3, builder.build());
+                }
+            }
+        }, 0, 1000);
     }
 
     private void createNotificationChannel() {
