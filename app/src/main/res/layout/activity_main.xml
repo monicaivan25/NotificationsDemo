@@ -17,17 +17,6 @@
         />
 
     <Button
-        android:id="@+id/long_text_notification_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:text="Long Text Notification"
-        android:textSize="15sp"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_below="@id/basic_notification_button"/>
-
-    <Button
         android:id="@+id/intent_notification_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,7 +25,7 @@
         android:textSize="15sp"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="5dp"
-        android:layout_below="@id/long_text_notification_button"/>
+        android:layout_below="@id/basic_notification_button"/>
 
     <Button
         android:id="@+id/progress_notification_button"
@@ -48,4 +37,49 @@
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="5dp"
         android:layout_below="@id/intent_notification_button"/>
+
+    <Button
+        android:id="@+id/expandable_image_notification_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Expandable image Notification"
+        android:textSize="15sp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/progress_notification_button"/>
+
+    <Button
+        android:id="@+id/expandable_text_notification_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Expandable text Notification"
+        android:textSize="15sp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/expandable_image_notification_button"/>
+
+    <Button
+        android:id="@+id/inbox_notification_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Inbox-style Notification"
+        android:textSize="15sp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/expandable_text_notification_button"/>
+
+    <Button
+        android:id="@+id/foreground_notification_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Foreground Notification"
+        android:textSize="15sp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/inbox_notification_button"/>
+
 </RelativeLayout>

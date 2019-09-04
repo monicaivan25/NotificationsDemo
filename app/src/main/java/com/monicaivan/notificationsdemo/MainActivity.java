@@ -3,16 +3,17 @@ package com.monicaivan.notificationsdemo;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.RemoteInput;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,9 +21,11 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     private static final String CHANNEL_ID = "channel_id";
+    private static final String PRIORITY_CHANNEL_ID = "pr_channel_id";
     private static final String KEY_TEXT_REPLY = "key_text_reply";
     private static final int CONVERSATION_REQUEST_CODE = 123;
-    private NotificationManagerCompat notificationManager;
+    private Bitmap bitmap;
+    private NotificationManagerCompat notificationManagerCompat;
 
 
     @Override
@@ -30,13 +33,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.cat);
         createNotificationChannel();
-        notificationManager = NotificationManagerCompat.from(this);
+        notificationManagerCompat = NotificationManagerCompat.from(this);
 
         findViewById(R.id.basic_notification_button).setOnClickListener(view -> createBasicNotification());
-        findViewById(R.id.long_text_notification_button).setOnClickListener(view -> createBasicNotificationLongText());
         findViewById(R.id.intent_notification_button).setOnClickListener(view -> createIntentNotification());
         findViewById(R.id.progress_notification_button).setOnClickListener(view -> createProgressBarNotification());
+        findViewById(R.id.expandable_image_notification_button).setOnClickListener(view -> createExpandableImageNotification());
+        findViewById(R.id.expandable_text_notification_button).setOnClickListener(view -> createExpandableTextNotification());
+        findViewById(R.id.inbox_notification_button).setOnClickListener(view -> createInboxNotification());
+        findViewById(R.id.foreground_notification_button).setOnClickListener(view -> createForegroundNotification());
     }
 
     ///Basic notifications
@@ -44,19 +51,9 @@ public class MainActivity extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
                 .setContentTitle("Basic Notification")
-                .setContentText("One line text.")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        notificationManager.notify(1, builder.build());
-    }
+                .setContentText("One line text.");
 
-    private void createBasicNotificationLongText() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notifications)
-                .setContentTitle("Notification Title")
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("This is a notification with a longer paragraph. This is a notification with a longer paragraph."))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        notificationManager.notify(2, builder.build());
+        notificationManagerCompat.notify(1, builder.build());
     }
 
     private void createIntentNotification() {
@@ -68,20 +65,17 @@ public class MainActivity extends AppCompatActivity {
                 .setContentTitle("Cat")
                 .setContentText("Meow.")
                 .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true);
-        notificationManager.notify(3, builder.build());
+        notificationManagerCompat.notify(3, builder.build());
     }
 
     //Progress bar notification
     private void createProgressBarNotification() {
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
         builder.setContentTitle("Progress bar notification")
                 .setContentText("Loading")
-                .setSmallIcon(R.drawable.ic_notifications)
-                .setPriority(NotificationCompat.PRIORITY_LOW);
+                .setSmallIcon(R.drawable.ic_notifications);
 
         final int PROGRESS_MAX = 100;
         final int[] currentProgress = {0};
@@ -93,28 +87,79 @@ public class MainActivity extends AppCompatActivity {
                 if (currentProgress[0] == PROGRESS_MAX) {
                     builder.setContentText("Done")
                             .setProgress(0, 0, false);
-                    notificationManager.notify(3, builder.build());
+                    notificationManagerCompat.notify(4, builder.build());
                     timer.cancel();
                 } else {
                     currentProgress[0] += 10;
                     builder.setProgress(PROGRESS_MAX, currentProgress[0], false);
-                    notificationManager.notify(3, builder.build());
+                    notificationManagerCompat.notify(4, builder.build());
                 }
             }
         }, 0, 1000);
     }
 
+    //Expandable notification
+    private void createExpandableTextNotification(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notifications)
+                .setContentTitle("Cat messaged you")
+                .setLargeIcon(bitmap)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(getString(R.string.big_text)));
+
+        notificationManagerCompat.notify(5, builder.build());
+    }
+
+    private void createExpandableImageNotification(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notifications)
+                .setContentTitle("Look, an image")
+                .setContentText("Just look at this image")
+                .setLargeIcon(bitmap)
+                .setStyle(new NotificationCompat.BigPictureStyle()
+                        .bigPicture(bitmap)
+                        .bigLargeIcon(null));
+        notificationManagerCompat.notify(6, builder.build());
+    }
+
+    //Inbox notification
+    private void createInboxNotification(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notifications)
+                .setContentTitle("Look at this inbox!")
+                .setLargeIcon(bitmap)
+                .setStyle(new NotificationCompat.InboxStyle()
+                    .addLine("Important email")
+                    .addLine("Please verify your account")
+                    .addLine("HoT sExY gIrLzZ iN uR aReA"));
+        notificationManagerCompat.notify(7, builder.build());
+    }
+
+
+    private void createForegroundNotification(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, PRIORITY_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notifications)
+                .setContentTitle("Foreground Notification")
+                .setContentText("This must be important.")
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+        notificationManagerCompat.notify(8, builder.build());
+
+    }
+
     private void createNotificationChannel() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
+            NotificationChannel basicNotificationChanel = new NotificationChannel(CHANNEL_ID,
+                    "basic notification chanel",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel priorityNotificationChannel = new NotificationChannel(PRIORITY_CHANNEL_ID,
+                    "priority notification channel",
+                    NotificationManager.IMPORTANCE_HIGH);
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            notificationManager.createNotificationChannel(basicNotificationChanel);
+            notificationManager.createNotificationChannel(priorityNotificationChannel);
         }
     }
+
 }
