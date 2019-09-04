@@ -3,8 +3,8 @@ package com.monicaivan.notificationsdemo;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.cat);
-        createNotificationChannel();
+        createNotificationChannels();
         notificationManagerCompat = NotificationManagerCompat.from(this);
 
         findViewById(R.id.basic_notification_button).setOnClickListener(view -> createBasicNotification());
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.progress_notification_button).setOnClickListener(view -> createProgressBarNotification());
         findViewById(R.id.expandable_image_notification_button).setOnClickListener(view -> createExpandableImageNotification());
         findViewById(R.id.expandable_text_notification_button).setOnClickListener(view -> createExpandableTextNotification());
+        findViewById(R.id.expandable_media_notification_button).setOnClickListener(view -> createExpandableMediaNotification());
         findViewById(R.id.inbox_notification_button).setOnClickListener(view -> createInboxNotification());
         findViewById(R.id.foreground_notification_button).setOnClickListener(view -> createForegroundNotification());
     }
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
                 .setContentTitle("Basic Notification")
-                .setContentText("One line text.");
+                .setContentText("Text");
 
         notificationManagerCompat.notify(1, builder.build());
     }
@@ -62,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
-                .setContentTitle("Cat")
-                .setContentText("Meow.")
+                .setContentTitle("Intent notification")
+                .setContentText("Click me")
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
         notificationManagerCompat.notify(3, builder.build());
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     private void createExpandableTextNotification(){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
-                .setContentTitle("Cat messaged you")
+                .setContentTitle("Expandable text notification")
                 .setLargeIcon(bitmap)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(getString(R.string.big_text)));
@@ -113,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
     private void createExpandableImageNotification(){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
-                .setContentTitle("Look, an image")
-                .setContentText("Just look at this image")
+                .setContentTitle("Expandable image notification")
+                .setContentText("Expand to see the full image")
                 .setLargeIcon(bitmap)
                 .setStyle(new NotificationCompat.BigPictureStyle()
                         .bigPicture(bitmap)
@@ -122,32 +123,54 @@ public class MainActivity extends AppCompatActivity {
         notificationManagerCompat.notify(6, builder.build());
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
+    private void createExpandableMediaNotification(){
+        Intent intent = new Intent(this, Cat.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        Notification notification = new Notification.Builder(this, CHANNEL_ID)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setSmallIcon(R.drawable.ic_notifications)
+                .addAction(R.drawable.ic_prev, "Previous", null) // #0
+                .addAction(R.drawable.ic_pause, "Pause", pendingIntent)  // #1
+                .addAction(R.drawable.ic_next, "Next", null)     // #2
+                .setStyle(new Notification.MediaStyle()
+                        .setShowActionsInCompactView(1 /* #1: pause button */)
+                        .setMediaSession(null))
+                .setContentTitle("Expandable media notification")
+                .setContentText("Artist")
+                .setLargeIcon(bitmap)
+                .build();
+
+        notificationManagerCompat.notify(7, notification);
+    }
+
     //Inbox notification
     private void createInboxNotification(){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
-                .setContentTitle("Look at this inbox!")
+                .setContentTitle("Inbox notification")
                 .setLargeIcon(bitmap)
                 .setStyle(new NotificationCompat.InboxStyle()
-                    .addLine("Important email")
-                    .addLine("Please verify your account")
-                    .addLine("HoT sExY gIrLzZ iN uR aReA"));
-        notificationManagerCompat.notify(7, builder.build());
+                    .addLine("First Line")
+                    .addLine("Second Line")
+                    .addLine("Third Line"));
+        notificationManagerCompat.notify(8, builder.build());
     }
 
-
+    //Foreground notification
     private void createForegroundNotification(){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, PRIORITY_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
                 .setContentTitle("Foreground Notification")
-                .setContentText("This must be important.")
+                .setContentText("This is important!!!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
-        notificationManagerCompat.notify(8, builder.build());
+        notificationManagerCompat.notify(9, builder.build());
 
     }
 
-    private void createNotificationChannel() {
-
+    private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel basicNotificationChanel = new NotificationChannel(CHANNEL_ID,
                     "basic notification chanel",

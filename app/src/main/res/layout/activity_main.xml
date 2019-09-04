@@ -61,6 +61,17 @@
         android:layout_below="@id/expandable_image_notification_button"/>
 
     <Button
+        android:id="@+id/expandable_media_notification_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Expandable media Notification"
+        android:textSize="15sp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/expandable_text_notification_button"/>
+
+    <Button
         android:id="@+id/inbox_notification_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,7 +80,7 @@
         android:textSize="15sp"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="5dp"
-        android:layout_below="@id/expandable_text_notification_button"/>
+        android:layout_below="@id/expandable_media_notification_button"/>
 
     <Button
         android:id="@+id/foreground_notification_button"
