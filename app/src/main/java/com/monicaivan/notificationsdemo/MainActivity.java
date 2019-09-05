@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.expandable_media_notification_button).setOnClickListener(view -> createExpandableMediaNotification());
         findViewById(R.id.inbox_notification_button).setOnClickListener(view -> createInboxNotification());
         findViewById(R.id.foreground_notification_button).setOnClickListener(view -> createForegroundNotification());
+        findViewById(R.id.full_screen_notification_button).setOnClickListener(view -> createFullScreenNotification());
     }
 
     ///Basic notifications
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         notificationManagerCompat.notify(8, builder.build());
     }
 
-    //Foreground notification
+    //High priority notifications
     private void createForegroundNotification(){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, PRIORITY_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
@@ -167,7 +168,22 @@ public class MainActivity extends AppCompatActivity {
                 .setContentText("This is important!!!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
         notificationManagerCompat.notify(9, builder.build());
+    }
 
+    private void createFullScreenNotification() {
+        Intent fullScreenIntent = new Intent(this, Cat.class);
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
+                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, PRIORITY_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_notifications)
+                        .setContentTitle("Incoming call")
+                        .setContentText("(919) 555-1234")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_CALL)
+                        .setFullScreenIntent(fullScreenPendingIntent, true);
+        notificationManagerCompat.notify(10, notificationBuilder.build());
     }
 
     private void createNotificationChannels() {
